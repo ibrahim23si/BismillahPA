@@ -100,9 +100,9 @@
             </div>
 
             <!-- Grafik Perbandingan Target vs Realisasi -->
-            <div class="bg-white overflow-hidden shadow-sm rounded-lg mb-8">
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg mt-8 mb-10">
                 <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex justify-between items-center mb-8">
                         <h3 class="text-lg font-semibold text-gray-900">Grafik Produksi</h3>
                         <div class="flex items-center space-x-2">
                             <label class="text-sm text-gray-600">Periode:</label>
