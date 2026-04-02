@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Http\Controllers\ReadOnly;
+
+use App\Http\Controllers\Controller;
+use App\Models\KeluarMaterialUtm;
+use App\Exports\KeluarMaterialUtmExport;
+use App\Helpers\Helper;
+use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
+
+class KeluarMaterialUtmViewController extends Controller
+{
+    /**
+     * Display a listing of keluar material utm (read only).
+     */
+    public function index(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = KeluarMaterialUtm::with('user')
+                ->select('keluar_material_utm.*')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('nomor_urut', 'desc');
+                
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->editColumn('tanggal', function($row) {
+                    return $row->tanggal->format('d/m/Y');
+                })
+                ->editColumn('netto', function($row) {
+                    return Helper::formatDesimal($row->netto) . ' ton';
+                })
+                ->addColumn('created_by_name', function($row) {
+                    return $row->user ? $row->user->name : '-';
+                })
+                ->addColumn('action', function($row) {
+                    return '<a href="'.route('readonly.keluar-material-utm.show', $row->id).'" class="inline-flex items-center px-3 py-1 bg-gray-500 text-white text-sm rounded-md hover:bg-gray-600">Detail</a>';
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+        
+        return view('readonly.keluar-material-utm.index');
+    }
+    
+    /**
+     * Display the specified keluar material utm.
+     */
+    public function show($id)
+    {
+        $material = KeluarMaterialUtm::with('user')->findOrFail($id);
+        return view('readonly.keluar-material-utm.show', compact('material'));
+    }
+
+    public function export(Request $request)
+    {
+        $startDate = $request->get('start_date', date('Y-m-01'));
+        $endDate = $request->get('end_date', date('Y-m-d'));
+        $fileName = 'Keluar_Material_UTM_' . date('d-m-Y', strtotime($startDate)) . '_sd_' . date('d-m-Y', strtotime($endDate)) . '.xlsx';
+        return Excel::download(new KeluarMaterialUtmExport($startDate, $endDate), $fileName);
+    }
+}

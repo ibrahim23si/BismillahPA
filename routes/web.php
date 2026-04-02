@@ -46,6 +46,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/dashboard', [App\Http\Controllers\Shared\DashboardController::class, 'index'])
         ->middleware('role:admin')
         ->name('admin.dashboard');
+    
+    // Dashboard AJAX update
+    Route::get('/dashboard/update', [App\Http\Controllers\Shared\DashboardController::class, 'updateData'])
+        ->middleware('auth')
+        ->name('dashboard.update');
 
     // Kasir Dashboard
     Route::get('/kasir/dashboard', [App\Http\Controllers\Shared\DashboardController::class, 'index'])
